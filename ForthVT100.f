@@ -86,7 +86,7 @@ NEED CommandStrings
 ;
 
 : vt.home ( --)
-\ move the cursor to home position (0, 0)
+\ move the cursor to home position (1, 1)
 	[ vt.buff 	<< ESC | '[' | 'H' | >> ]
 	sliteral type
 ;
