@@ -2,22 +2,36 @@ include e:\coding\Forthbase\libraries\libraries.f
 need ForthVT100
 include %idir%\ForthVT100_tables.f
 
-5 table
-12 value cw		\ cell width
+5 12 1 table
 
 assign vt.green to-do table.line-format
 assign vt.yellow to-do table.text-format
 
-row cw |h cw |h cw |h cw |h
-row cw |t cw |t cw |t cw |t
-row cw |l cw |l cw |l cw |l
-row cw |f cw |f cw |f cw |f
+vt.cls vt.home vt.reset
+
+row |h |h |h |h
+row |t |t |t |t
+row |l |l |l |l
+row |f |f |f |f
 CR
 
-row cw 4* 3 + |h ." Ecliptic coordinates of the mount"
-row cw |r cw |r cw |r cw |r
-row cw |t ." RA" 	cw |t ." 00:05:15" 
-	  cw |t ." DEC" 	cw |t ." +12:45:30"
-row cw |f cw |f cw |f cw |f
+51 -> table.cellWidth
+row |h ." Ecliptic coordinates of the mount"
+12 -> table.cellWidth
+row |r |r |r |r
+row |t s" RA" CJ.	|t s" 00:05:15" LJ. |t s" DEC" RJ. |t s" +12:45:30" LJ.
+row |f |f |f |f
 CR
 
+vt.red_bg
+:noname vt.cyan vt.italic_off ; ' table.line-format defer!
+:noname vt.white vt.italic ; ' table.text-format defer!
+ 
+ 0 7 0 table
+ 15 0 vt.move
+ row |h row |t row |t s" One" CJ. row |t row |f  
+ 
+ 20 7 0 table                               
+ 15 0 vt.move                              
+ row |h row |t row |t s" Two" CJ. row |t row |f
+ vt.reset CR 

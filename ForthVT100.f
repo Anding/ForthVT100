@@ -53,25 +53,25 @@ NEED CommandStrings
 47 VT100-CONTROL vt.white_bg
 49 VT100-CONTROL vt.default_bg
 
-90 VT100-CONTROL vt.br_black
-91 VT100-CONTROL vt.br_red
-92 VT100-CONTROL vt.br_green 
-93 VT100-CONTROL vt.br_yellow
-94 VT100-CONTROL vt.br_blue
-95 VT100-CONTROL vt.br_magenta
-96 VT100-CONTROL vt.br_cyan
-97 VT100-CONTROL vt.br_white
-99 VT100-CONTROL vt.br_default
+90 VT100-CONTROL vt.black_off
+91 VT100-CONTROL vt.red_off
+92 VT100-CONTROL vt.green_off 
+93 VT100-CONTROL vt.yellow_off
+94 VT100-CONTROL vt.blue_off
+95 VT100-CONTROL vt.magenta_off
+96 VT100-CONTROL vt.cyan_off
+97 VT100-CONTROL vt.white_off
+99 VT100-CONTROL vt.default_off
 
-100 VT100-CONTROL vt.br_black_bg
-101 VT100-CONTROL vt.br_red_bg
-102 VT100-CONTROL vt.br_green_bg 
-103 VT100-CONTROL vt.br_yellow_bg
-104 VT100-CONTROL vt.br_blue_bg
-105 VT100-CONTROL vt.br_magenta_bg
-106 VT100-CONTROL vt.br_cyan_bg
-107 VT100-CONTROL vt.br_white_bg
-109 VT100-CONTROL vt.br_default_bg
+100 VT100-CONTROL vt.black_bg_off
+101 VT100-CONTROL vt.red_bg_off
+102 VT100-CONTROL vt.green_bg_off 
+103 VT100-CONTROL vt.yellow_bg_off
+104 VT100-CONTROL vt.blue_bg_off
+105 VT100-CONTROL vt.magenta_bg_off
+106 VT100-CONTROL vt.cyan_bg_off
+107 VT100-CONTROL vt.white_bg_off
+109 VT100-CONTROL vt.default_bg_off
 
 : vt.cls ( --)
 \ clear the entire screen
