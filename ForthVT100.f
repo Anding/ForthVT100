@@ -80,7 +80,7 @@ NEED CommandStrings
 ;
 
 : vt.erase_line ( --)
-\ clear the entire screen
+\ clear the entire line
 	[ vt.buff << ESC | s" [2L" ..| >> ]
 	sliteral type
 ;

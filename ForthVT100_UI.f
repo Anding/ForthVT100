@@ -13,33 +13,27 @@ s" " $value vt.str01
 : .> ( caddr u --)
 \ print the string and return the cursor to the start of the current line 
 \ use the STDOUT ink 
-    stdout type 0 vt.column vt.default flushkeys
+    stdout ( vt.erase_line) 0 vt.column type flushkeys vt.default 
 ;
 
-
+: .>> ( caddr u --)
+\ print the string and return the cursor to the start of the current line 
+\ use the STDOUT ink 
+    stderr vt.erase_line type flushkeys vt.default 
+;
 
 : countdown ( n -- IOR)
 \ countdown n seconds offering the user a cancellation
 \ return IOR = -1 if the user cancelled, 0 otherwise
-    cr
-    0 over do
-        i (.)       $-> vt.str01    
-        s"  ... "   $+> vt.str01   
-        dup (.)     $+> vt.str01
-        s"  seconds. Key X to cancel" $+> vt.str01
+    dup cr (.) nip ( n r)
+    over 0 swap do
+        i over (u.r)    $-> vt.str01    
+        s"  / "         $+> vt.str01   
+        2dup (u.r)      $+> vt.str01
+        s"  seconds. Key x to cancel" $+> vt.str01
         vt.str01 .>
-        1000 ms
+        i 0<> if 999 ms then   \ no wait after reaching 0
+        key? if key 'x' = if unloop 2drop -1 cr exit then then       
     -1 +loop
-    drop cr 
-;
-    
-    
-: test
-    cr 
-    s" First" .>
-    800 ms
-    s" Second" .>
-    800 ms
-    s" Third" .>
-    cr
+    2drop 0 cr 
 ;

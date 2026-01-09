@@ -10,7 +10,7 @@ s" -20:00:50" F1	=>" DEC"
 s" 179:59:59" F1 	=>" ALT"
 s" 72:31:00" F1	=>" AZ" 
 
-12 5 1 table
+0 5 1 table
 assign vt.green to-do table.text-format
 assign vt.cyan to-do table.line-format 
 

@@ -2,7 +2,7 @@ include e:\coding\Forthbase\libraries\libraries.f
 need ForthVT100
 include %idir%\ForthVT100_tables.f
 
-5 12 1 table
+0 12 1 table
 
 assign vt.green to-do table.line-format
 assign vt.yellow to-do table.text-format
