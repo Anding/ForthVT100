@@ -81,9 +81,15 @@ NEED CommandStrings
 
 : vt.erase_line ( --)
 \ clear the entire line
-	[ vt.buff << ESC | s" [2L" ..| >> ]
+	[ vt.buff << ESC | s" [2K" ..| >> ]
 	sliteral type
 ;
+
+: vt.erase_to_end_line
+ \ clear to the end of line line
+	[ vt.buff << ESC | s" [0K" ..| >> ]
+	sliteral type
+;   
 
 : vt.home ( --)
 \ move the cursor to home position (1, 1)
