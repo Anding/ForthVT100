@@ -4,11 +4,12 @@ NEED ForthBase
 NEED ForthVT100
 
 \ controls what is reported
-3 value report-level
-\ 0 nothing
-\ 1 or greater - errors
-\ 2 or greater - output
-\ 3 or greater - diagnostics
+3 value report.level
+
+: DIAGNOSTICS       3 -> report.level ;
+: STANDARD-OUTPUT   2 -> report.level ;
+: JUST-ERRORS       1 -> report.level ;
+: SILENT-RUNNING    0 -> report.level ;
 
 
 defer vt.err-on
@@ -31,7 +32,7 @@ s" " $value vt.str01
 \ report output
 \ print the string and return the cursor to the start of the current line 
 \ use the STDOUT ink 
-    report-level 2 >=  if
+    report.level 2 >=  if
         VT.out-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default VT.out-off
     else 2drop then
 ;
@@ -39,7 +40,7 @@ s" " $value vt.str01
 : .>E ( caddr u --)
 \ report an error
 \ print the string and return the cursor to the start of the current line 
-    report-level 1 >=  if
+    report.level 1 >=  if
         vt.err-on ( vt.erase_line) 0 vt.column type flushkeys vt.err-off
     else 2drop then
 ;
@@ -47,7 +48,7 @@ s" " $value vt.str01
 : .>D ( caddr u --)
 \ report a diagnostoc
 \ print the string and return the cursor to the start of the current line 
-    report-level 3 >=  if
+    report.level 3 >=  if
         vt.dia-on ( vt.erase_line) 0 vt.column type flushkeys vt.dia-off 
     else 2drop then
 ;
