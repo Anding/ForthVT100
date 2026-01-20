@@ -53,7 +53,7 @@ s" " $value vt.str01
     else 2drop then
 ;
 
-: countdown ( n -- IOR)
+: .countdown ( n -- IOR)
 \ countdown n seconds offering the user a cancellation
 \ return IOR = -1 if the user cancelled, 0 otherwise
     dup cr (.) nip ( n r)

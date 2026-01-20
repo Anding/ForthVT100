@@ -14,4 +14,4 @@ CR
 s" A diagnostic" .>D
 CR
 
-5 countdown
+5 .countdown
