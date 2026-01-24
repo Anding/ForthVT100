@@ -41,7 +41,7 @@ s" " $value vt.str01
 \ report an error
 \ print the string and return the cursor to the start of the current line 
     report.level 1 >=  if
-        vt.err-on ( vt.erase_line) 0 vt.column type flushkeys vt.err-off
+        vt.err-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default vt.err-off
     else 2drop then
 ;
 
@@ -49,22 +49,20 @@ s" " $value vt.str01
 \ report a diagnostoc
 \ print the string and return the cursor to the start of the current line 
     report.level 3 >=  if
-        vt.dia-on ( vt.erase_line) 0 vt.column type flushkeys vt.dia-off 
+        vt.dia-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default vt.dia-off 
     else 2drop then
 ;
 
 : .countdown ( n -- IOR)
 \ countdown n seconds offering the user a cancellation
 \ return IOR = -1 if the user cancelled, 0 otherwise
-    dup cr (.) nip ( n r)
+    dup (.) nip ( n r)
     over 0 swap do
         i over (u.r)    $-> vt.str01    
-        s"  ("         $+> vt.str01   
-        2dup (u.r)      $+> vt.str01
-        s"  seconds) key x to cancel" $+> vt.str01
+        s"  seconds. Key x to cancel" $+> vt.str01
         vt.str01 .>
         i 0<> if 999 ms then   \ no wait after reaching 0
         key? if key 'x' = if unloop 2drop -1 cr exit then then       
     -1 +loop
-    2drop 0 cr 
+    2drop 0
 ;
