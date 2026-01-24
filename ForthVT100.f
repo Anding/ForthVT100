@@ -1,4 +1,3 @@
-include %idir%\..\ForthBase\libraries\libraries.f
 NEED CommandStrings
 
 0x1b CONSTANT ESC									\ ESC character
@@ -133,4 +132,16 @@ NEED CommandStrings
 	sliteral type
 ;
 
+\ user lexicon
+
+: CLS
+    vt.cls
+    vt.home
+;
+
+: -cr
+\ move up one line (undo a cr)
+	vt.buff << ESC | '[' | '1' | 'F' | >> 
+	type
+;  
 
