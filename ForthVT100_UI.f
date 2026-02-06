@@ -33,7 +33,7 @@ s" " $value vt.str01
 \ print the string and return the cursor to the start of the current line 
 \ use the STDOUT ink 
     report.level 2 >=  if
-        VT.out-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default VT.out-off
+        VT.out-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default VT.out-off    \ excludes cr for continuous updates
     else 2drop then
 ;
 
@@ -41,7 +41,7 @@ s" " $value vt.str01
 \ report an error
 \ print the string and return the cursor to the start of the current line 
     report.level 1 >=  if
-        vt.err-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default vt.err-off
+        vt.err-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default vt.err-off cr \ includes cr for error reporting
     else 2drop then
 ;
 
@@ -49,7 +49,7 @@ s" " $value vt.str01
 \ report a diagnostoc
 \ print the string and return the cursor to the start of the current line 
     report.level 3 >=  if
-        vt.dia-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default vt.dia-off 
+        vt.dia-on 0 vt.column type vt.erase_to_end_line flushkeys vt.default vt.dia-off cr  \ includes CR for diagnostic reporting
     else 2drop then
 ;
 
@@ -62,7 +62,7 @@ s" " $value vt.str01
         s"  seconds. Key x to cancel" $+> vt.str01
         vt.str01 .>
         i 0<> if 999 ms then   \ no wait after reaching 0
-        key? if key 'x' = if unloop 2drop -1 cr exit then then       
+        key? if key 'x' = if unloop 2drop -1 exit then then       
     -1 +loop
     2drop 0
 ;
