@@ -1,5 +1,12 @@
-include %idir%\ForthVT100.f
+NEED ForthVT100
 
-CR
-vt.red ." This is in red" CR
-vt.green ." This is in green" CR
+s" First output" .>
+s" Second output" .>
+s" An error" .E>
+s" A diagnostic" .D>
+
+s" Updating status" ...>
+1000 ms
+-...
+
+5 .countdown drop

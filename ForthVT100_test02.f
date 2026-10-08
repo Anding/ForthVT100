@@ -1,17 +1,7 @@
-include "%idir%\ForthVT100_UI.f"
+NEED ForthVT100
 
-CR 
-s" First output" .>
-1000 ms 
-s" Second output................" .>
-1000 ms
-s" Third output" .>
-CR
-
-s" An error" .>E
-CR
-
-s" A diagnostic" .>D
-CR
-
-5 .countdown
+cr
+vt.red ." This is in red" vt.reset cr
+vt.green ." This is in green" vt.reset cr
+s" A successful operation" .OK>
+s" A warning" .W>

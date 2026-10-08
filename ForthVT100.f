@@ -1,19 +1,59 @@
-\ VT100 presentation vocabulary. Defining words compile immutable escape
-\ sequences into the dictionary; vt.buff is shared synchronous scratch space.
+\ State-aware ANSI/VT100 presentation primitives.
+\
+\ Terminal control is emitted only when stdout is a character device.  The
+\ presentation mode can be forced for repeatable tests, then returned to the
+\ state detected from the process standard handles.
 
 NEED CommandStrings
 
-0x1b CONSTANT ESC									\ ESC character
-256 buffer: vt.buff								\ private buffer for command manipulation
+0x1b CONSTANT ESC
+256 buffer: vt.buff
+
+also system
+: vt.detect-terminal-input ( -- flag )
+    stdindev @ FILE_TYPE_CHAR =
+;
+
+: vt.detect-terminal-output ( -- flag )
+    stdoutdev @ FILE_TYPE_CHAR =
+;
+previous
+
+0 value vt.terminal-input
+0 value vt.terminal-output
+
+: AUTO-PRESENTATION ( -- )
+    vt.detect-terminal-input  -> vt.terminal-input
+    vt.detect-terminal-output -> vt.terminal-output
+;
+
+: TERMINAL-PRESENTATION ( -- )
+    -1 -> vt.terminal-input
+    -1 -> vt.terminal-output
+;
+
+: PLAIN-PRESENTATION ( -- )
+    0 -> vt.terminal-input
+    0 -> vt.terminal-output
+;
+
+: vt.control-type ( caddr u -- )
+\ Emit terminal control without changing Forth's logical output column.
+    vt.terminal-output if
+        out @ >r type r> out !
+    else
+        2drop
+    then
+;
 
 : VT100-CONTROL
-	create ( n 'NAME' --)
-		here 1+ 
-		<< ESC | '[' | .| 'm' | >>
-		dup 1+ allot
-		swap 1- c!
-	does>
-		( pfa) count type
+    create ( n "name" -- )
+        here 1+
+        << ESC | '[' | .| 'm' | >>
+        dup 1+ allot
+        swap 1- c!
+    does> ( pfa -- )
+        count vt.control-type
 ;
 
 0 VT100-CONTROL vt.reset
@@ -37,7 +77,7 @@ NEED CommandStrings
 
 30 VT100-CONTROL vt.black
 31 VT100-CONTROL vt.red
-32 VT100-CONTROL vt.green 
+32 VT100-CONTROL vt.green
 33 VT100-CONTROL vt.yellow
 34 VT100-CONTROL vt.blue
 35 VT100-CONTROL vt.magenta
@@ -47,7 +87,7 @@ NEED CommandStrings
 
 40 VT100-CONTROL vt.black_bg
 41 VT100-CONTROL vt.red_bg
-42 VT100-CONTROL vt.green_bg 
+42 VT100-CONTROL vt.green_bg
 43 VT100-CONTROL vt.yellow_bg
 44 VT100-CONTROL vt.blue_bg
 45 VT100-CONTROL vt.magenta_bg
@@ -57,7 +97,7 @@ NEED CommandStrings
 
 90 VT100-CONTROL vt.black_off
 91 VT100-CONTROL vt.red_off
-92 VT100-CONTROL vt.green_off 
+92 VT100-CONTROL vt.green_off
 93 VT100-CONTROL vt.yellow_off
 94 VT100-CONTROL vt.blue_off
 95 VT100-CONTROL vt.magenta_off
@@ -67,7 +107,7 @@ NEED CommandStrings
 
 100 VT100-CONTROL vt.black_bg_off
 101 VT100-CONTROL vt.red_bg_off
-102 VT100-CONTROL vt.green_bg_off 
+102 VT100-CONTROL vt.green_bg_off
 103 VT100-CONTROL vt.yellow_bg_off
 104 VT100-CONTROL vt.blue_bg_off
 105 VT100-CONTROL vt.magenta_bg_off
@@ -75,75 +115,85 @@ NEED CommandStrings
 107 VT100-CONTROL vt.white_bg_off
 109 VT100-CONTROL vt.default_bg_off
 
-: vt.cls ( --)
-\ clear the entire screen
-	[ vt.buff << ESC | s" [2J" ..| >> ]
-	sliteral type
+: vt.cls ( -- )
+    [ vt.buff << ESC | s" [2J" ..| >> ]
+    sliteral vt.control-type
 ;
 
-: vt.erase_line ( --)
-\ clear the entire line
-	[ vt.buff << ESC | s" [2K" ..| >> ]
-	sliteral type
+: vt.erase_line ( -- )
+    [ vt.buff << ESC | s" [2K" ..| >> ]
+    sliteral vt.control-type
 ;
 
-: vt.erase_to_end_line
- \ clear to the end of line line
-	[ vt.buff << ESC | s" [0K" ..| >> ]
-	sliteral type
-;   
-
-: vt.home ( --)
-\ move the cursor to home position (1, 1)
-	[ vt.buff 	<< ESC | '[' | 'H' | >> ]
-	sliteral type
+: vt.erase_to_end_line ( -- )
+    [ vt.buff << ESC | s" [0K" ..| >> ]
+    sliteral vt.control-type
 ;
 
-: vt.newline
-	vt.buff << ESC | '[' | '1' | 'E' | >> 
-	type
-;	
-
-: vt.move ( line column --)
-\ move the cursor to the line, column
-	swap 														( column line)
-	vt.buff << ESC | '[' | .| ';' | (.) ..| 'H' | >> 
-	type
+: vt.home ( -- )
+    [ vt.buff << ESC | '[' | 'H' | >> ]
+    sliteral vt.control-type
+    vt.terminal-output if out off then
 ;
 
-: vt.column ( column --)
-\ move the cursor to the column
-	vt.buff << ESC | '[' | .| 'G' | >> 
-	type
+: vt.newline ( -- )
+    vt.terminal-output if
+        vt.buff << ESC | '[' | '1' | 'E' | >> vt.control-type
+        out off
+    else
+        cr
+    then
 ;
 
-: vt.right ( columns --)
-\ move the cursor columns to the right
-	vt.buff << ESC | '[' | .| 'C' | >> 
-	type
-;	
-
-: vt.cursor_off ( --)
-\ make the cursor invisible
-	[ vt.buff << ESC | s" [?25l" ..| >> ]
-	sliteral type
+: vt.move ( line column -- )
+    vt.terminal-output if
+        1 max swap
+        vt.buff << ESC | '[' | .| ';' | (.) ..| 'H' | >> vt.control-type
+        1- out !
+    else
+        2drop
+    then
 ;
 
-: vt.cursor_on ( --)
-\ make the cursor invisible
-	[ vt.buff << ESC | s" [?25h" ..| >> ]
-	sliteral type
+: vt.column ( column -- )
+    vt.terminal-output if
+        1 max dup
+        vt.buff << ESC | '[' | .| 'G' | >> vt.control-type
+        1- out !
+    else
+        drop
+    then
 ;
 
-\ user lexicon
-
-: CLS
-    vt.cls
-    vt.home
+: vt.right ( columns -- )
+    vt.terminal-output if
+        0 max dup
+        vt.buff << ESC | '[' | .| 'C' | >> vt.control-type
+        out +!
+    else
+        drop
+    then
 ;
 
-: -cr
-\ move up one line (undo a cr)
-	vt.buff << ESC | '[' | '1' | 'F' | >> 
-	type
-;  
+: vt.cursor_off ( -- )
+    [ vt.buff << ESC | s" [?25l" ..| >> ]
+    sliteral vt.control-type
+;
+
+: vt.cursor_on ( -- )
+    [ vt.buff << ESC | s" [?25h" ..| >> ]
+    sliteral vt.control-type
+;
+
+: CLS ( -- )
+    vt.cls vt.home
+;
+
+: -cr ( -- )
+    vt.terminal-output if
+        vt.buff << ESC | '[' | '1' | 'F' | >> vt.control-type
+        out off
+    then
+;
+
+AUTO-PRESENTATION
