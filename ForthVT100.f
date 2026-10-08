@@ -1,3 +1,6 @@
+\ VT100 presentation vocabulary. Defining words compile immutable escape
+\ sequences into the dictionary; vt.buff is shared synchronous scratch space.
+
 NEED CommandStrings
 
 0x1b CONSTANT ESC									\ ESC character
@@ -144,4 +147,3 @@ NEED CommandStrings
 	vt.buff << ESC | '[' | '1' | 'F' | >> 
 	type
 ;  
-
