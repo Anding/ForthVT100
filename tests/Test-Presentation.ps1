@@ -81,6 +81,10 @@ if (-not $panel.Success -or
     throw 'Panel top and bottom borders have different widths.'
 }
 
+if ($plainBody -notmatch 'Cursor controls remain plain\r?\n\r?\n\+-- Camera') {
+    throw 'Panel does not begin on a new line.'
+}
+
 $terminal = Invoke-Presentation (Join-Path $PSScriptRoot 'PresentationTerminal.f')
 $terminalBody = [regex]::Match(
     $terminal,

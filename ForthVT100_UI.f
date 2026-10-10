@@ -212,7 +212,7 @@ s" " $value vt.str01
 ;
 
 : panel{ { caddr u | fill -- }
-    -...
+    -... cr
     presentation.width u - 6 - 0 max -> fill
     vt.rule-on ." +-- " vt.rule-off
     vt.section-on caddr u type vt.section-off space
