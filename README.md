@@ -57,6 +57,21 @@ JUST-ERRORS
 SILENT-RUNNING
 ```
 
+## Optional channel logs
+
+File logging is independent of terminal presentation and is off by default:
+
+```forth
+s" E:\images\logs" $-> log.directory
+LOG-ON
+s" native-autofocus" s" locked 7 stars" log-line
+LOG-OFF
+```
+
+Each channel appends to `<log.directory>\<channel>.log`. Every line is flushed
+and the file is closed before `log-line` returns. Callers choose their channel
+and message; the logger does not copy ordinary terminal output automatically.
+
 ## Transient status
 
 `...>` creates or replaces one transient terminal line:
