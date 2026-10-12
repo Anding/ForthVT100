@@ -17,13 +17,12 @@ s" " $value log.pathname
     log.pathname
 ;
 
-: log.open-append { caddr u | fileid ior -- fileid }
-    caddr u r/w open-file -> ior -> fileid
-    ior if
-        caddr u r/w create-file
-            abort" Cannot create log channel"
-        -> fileid
-    then
+: log.open-append { caddr u | fileid zaddr[ 1024 ] -- fileid }
+    \ Open errors include sharing violations, not just missing files.
+    \ Atomic OPEN_ALWAYS (4) never truncates an existing channel on failure.
+    caddr u expand zaddr[ zplace
+    zaddr[ r/w 1 0 4 0 0 CreateFile -> fileid
+    fileid -1 = abort" Cannot open log channel"
     fileid file-size abort" Cannot size log channel"
     fileid reposition-file abort" Cannot append log channel"
     fileid

@@ -71,6 +71,10 @@ LOG-OFF
 Each channel appends to `<log.directory>\<channel>.log`. Every line is flushed
 and the file is closed before `log-line` returns. Callers choose their channel
 and message; the logger does not copy ordinary terminal output automatically.
+The Win32 open-or-create operation is atomic and never truncates an existing
+channel. An unavailable or locked channel raises an open error; it is not
+misclassified as a missing file and retried with destructive creation.
+Independent test hosts should use separate `log.directory` values.
 
 ## Transient status
 
