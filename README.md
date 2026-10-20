@@ -163,6 +163,10 @@ Cell tags are:
 `LJ.`, `CJ.`, and `RJ.` display strings left-, centre-, and right-justified.
 Ordinary words such as `.`, `type`, and `."` may also be used directly.
 
+`ForthVT100_tables_test1.f` demonstrates ForthBase ordered string maps:
+`allocate-map` creates the data, and `s" RA" F1 map@ RJ.` renders a value
+without adding dictionary words or changing the search order.
+
 ## Low-level VT100 vocabulary
 
 `ForthVT100.f` retains direct controls including:
