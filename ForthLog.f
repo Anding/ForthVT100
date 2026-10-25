@@ -10,6 +10,7 @@ s" " $value log.pathname
 : LOG-OFF ( -- )  0 -> LOG ;
 
 : log.filepath { channel-addr channel-u -- caddr u }
+\ Assemble the selected channel's pathname.
     log.directory $-> log.pathname
     s" \" $+> log.pathname
     channel-addr channel-u $+> log.pathname
@@ -17,23 +18,23 @@ s" " $value log.pathname
     log.pathname
 ;
 
-: log.open-append { caddr u | fileid zaddr[ 1024 ] -- fileid }
+: log-line
+    { channel-addr channel-u message-addr message-u | fileid zaddr[ 1024 ] -- }
+\ Append one message if logging is enabled; always close an opened channel.
+    LOG 0= if exit then
     \ Open errors include sharing violations, not just missing files.
     \ Atomic OPEN_ALWAYS (4) never truncates an existing channel on failure.
-    caddr u expand zaddr[ zplace
+    channel-addr channel-u log.filepath expand zaddr[ zplace
     zaddr[ r/w 1 0 4 0 0 CreateFile -> fileid
-    fileid -1 = abort" Cannot open log channel"
-    fileid file-size abort" Cannot size log channel"
-    fileid reposition-file abort" Cannot append log channel"
-    fileid
-;
-
-: log-line
-    { channel-addr channel-u message-addr message-u | fileid -- }
-    LOG 0= if exit then
-    channel-addr channel-u log.filepath log.open-append -> fileid
-    message-addr message-u fileid write-line
-        abort" Cannot write log channel"
-    fileid flush-file abort" Cannot flush log channel"
-    fileid close-file abort" Cannot close log channel"
+    fileid -1 = if s" Cannot open log channel" .E> exit then
+    fileid file-size if 2drop true else fileid reposition-file then if
+        s" Cannot append log channel" .E>
+    else
+        message-addr message-u fileid write-line if
+            s" Cannot write log channel" .E>
+        else
+            fileid flush-file if s" Cannot flush log channel" .E> then
+        then
+    then
+    fileid close-file if s" Cannot close log channel" .E> then
 ;
